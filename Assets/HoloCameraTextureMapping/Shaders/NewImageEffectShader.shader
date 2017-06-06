@@ -13,20 +13,20 @@
 		Pass
 		{
 			CGPROGRAM
-// Upgrade NOTE: excluded shader from DX11, OpenGL ES 2.0 because it uses unsized arrays
-#pragma exclude_renderers d3d11 gles
 			#pragma vertex vert
 			#pragma fragment frag
 			
 			#include "UnityCG.cginc"
 
-			float2 _UVArray[];
+#pragma target 5.0
+
+	uniform StructuredBuffer<float2> _UVArray;
 
 			struct appdata
 			{
 				float4 vertex : POSITION;
 				float2 uv : TEXCOORD0;
-				//uint id : SV_VertexID;
+				uint id : SV_VertexID;
 			};
 
 			struct v2f
@@ -39,7 +39,8 @@
 			{
 				v2f o;
 				o.vertex = UnityObjectToClipPos(v.vertex);
-				o.uv = v.uv;
+				//o.uv = v.uv;
+				o.uv = float2(0.5, 0.7);
 				//o.uv = _UVArray[vertexID];
 				return o;
 			}

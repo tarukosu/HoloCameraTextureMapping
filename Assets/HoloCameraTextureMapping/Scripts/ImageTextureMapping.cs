@@ -4,24 +4,34 @@ using UnityEngine;
 
 public class ImageTextureMapping : MonoBehaviour {
     public Texture2D SampleTexture;
-	// Use this for initialization
-	void Start () {
+    private ComputeBuffer buffer;
+
+    // Use this for initialization
+    void Start () {
         var mesh = GetComponent<MeshFilter>().mesh;
         var vertices = mesh.vertices;
 
-        var uvArray = new float[vertices.Length];
+        var uvArray = new float[vertices.Length * 2];
         var index = 0;
         foreach(var v in vertices)
         {
-            Debug.Log(v.ToString());
-            uvArray[index] = (float)index / vertices.Length;
             //TOOD
+            Debug.Log(v.ToString());
+
+            //uvArray[index] = (float)index / (vertices.Length * 2);
+            uvArray[index] = (float)((v.x + 5.0) / 10.0);
+            Debug.Log(uvArray[index]);
+            index += 1;
+            uvArray[index] = (float)((v.z + 5.0) / 10.0);
+            //uvArray[index] = (float)index / (vertices.Length * 2);
+            Debug.Log(uvArray[index]);
             index += 1;
         }
+        //Debug.Log(uvArray[0]);
 
         var material = GetComponent<Renderer>().material;
 
-        ComputeBuffer buffer = new ComputeBuffer(uvArray.Length, sizeof(float));
+        buffer = new ComputeBuffer(vertices.Length, sizeof(float) * 2);
         buffer.SetData(uvArray);
         material.SetBuffer("_UVArray", buffer);
 
@@ -40,4 +50,12 @@ public class ImageTextureMapping : MonoBehaviour {
 	void Update () {
 		
 	}
+
+    private void OnDestroy()
+    {
+        if (buffer != null)
+        {
+            buffer.Release();
+        }
+    }
 }

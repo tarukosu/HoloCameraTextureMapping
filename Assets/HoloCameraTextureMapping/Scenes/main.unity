@@ -291,6 +291,10 @@ Prefab:
       propertyPath: RoomModel
       value: 
       objectReference: {fileID: 100006, guid: 50b34b7a98046414ab7c28eb4b031cc9, type: 3}
+    - target: {fileID: 1000010302963436, guid: 2ed75ffdf9031c94e8bce4b3d17b9928, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 2ed75ffdf9031c94e8bce4b3d17b9928, type: 2}
   m_IsPrefabParent: 0
