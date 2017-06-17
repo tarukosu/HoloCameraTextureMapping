@@ -4,4 +4,7 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/HoloCameraTextureMapping/Scenes/main.unity
+    guid: 4ea12a4ea3c6180439224fb71a54c5be
