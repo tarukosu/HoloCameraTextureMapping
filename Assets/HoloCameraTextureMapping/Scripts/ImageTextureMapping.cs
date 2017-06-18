@@ -60,6 +60,7 @@ namespace HoloCameraTextureMapping
 
             foreach (var v in vertices)
             {
+                //Vector2 uv = -Vector2.one;
                 Vector2 uv = Vector2.zero;
                 var textureIndex = 0;
 
@@ -71,11 +72,22 @@ namespace HoloCameraTextureMapping
                     var w2c = worldToCameraMatrixList[i];
                     var pm = projectionMatrixList[i];
                     var cameraPosition = w2c.MultiplyPoint(position);
+
+                    if(cameraPosition.z >= 0)
+                    {
+                        continue;
+                    }
+
                     var projectionPosition = pm.MultiplyPoint(cameraPosition);
                     var projectionUV = new Vector2(projectionPosition.x, projectionPosition.y);
                     //Debug.Log(position);
                     //Debug.Log(projectionUV);
-
+                    /*
+                    if (projectionPosition.z <= 0)
+                    {
+                        continue;
+                    }
+                    */
                     if (float.IsNaN(projectionUV.x) || float.IsNaN(projectionUV.y))
                     {
                         continue;
@@ -98,6 +110,7 @@ namespace HoloCameraTextureMapping
                     }
                     else
                     {
+                        continue;
                         uv.x = projectionUV.x;
                         uv.y = projectionUV.y;
                     }

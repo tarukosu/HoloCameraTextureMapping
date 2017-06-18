@@ -46,15 +46,19 @@ public class TakePicture : Singleton<TakePicture>
 
     public GameObject SpatialMapping;
     private ImageTextureMapping[] imageTextureMappingList;
-
+#if UNITY_EDITOR
+    private const int TEXTURE_WIDTH = 512;
+    private const int TEXTURE_HEIGHT = 256;
+#else
     private const int TEXTURE_WIDTH = 1024;//512;
     private const int TEXTURE_HEIGHT = 512;//256
+#endif
 
     public event Action OnTextureUpdated;
 
-    #region debug
+#region debug
     public Texture2D SampleTexture;
-    #endregion
+#endregion
     // Use this for initialization
     void Start()
     {
@@ -71,14 +75,19 @@ public class TakePicture : Singleton<TakePicture>
         imageTextureMappingList = SpatialMapping.GetComponentsInChildren<ImageTextureMapping>();
 
         //for debug
-        OnPhotoCapturedDebug();
+        //OnPhotoCapturedDebug();
+#if UNITY_EDITOR
         StartCoroutine(DebugCapture());
+#endif
     }
 
     IEnumerator DebugCapture()
     {
-        yield return new WaitForSeconds(4);
-        //OnPhotoCapturedDebug();
+        while (true)
+        {
+            yield return new WaitForSeconds(3);
+            OnPhotoCapturedDebug();
+        }
     }
 
 
@@ -86,26 +95,24 @@ public class TakePicture : Singleton<TakePicture>
     {
         List<Resolution> resolutions = new List<Resolution>(PhotoCapture.SupportedResolutions);
 
-        //default using 1280*720,considering hololens' performance and unity auto crop texture to 1024
+        //1280 * 720
         Resolution selectedResolution = resolutions[0];
 
         //camera params
-        m_CameraParameters = new CameraParameters(WebCamMode.PhotoMode);
-        m_CameraParameters.cameraResolutionWidth = selectedResolution.width;
-        m_CameraParameters.cameraResolutionHeight = selectedResolution.height;
-        m_CameraParameters.hologramOpacity = 0.0f;
-        m_CameraParameters.pixelFormat = CapturePixelFormat.BGRA32;
+        m_CameraParameters = new CameraParameters(WebCamMode.PhotoMode)
+        {
+            cameraResolutionWidth = selectedResolution.width,
+            cameraResolutionHeight = selectedResolution.height,
+            hologramOpacity = 0.0f,
+            pixelFormat = CapturePixelFormat.BGRA32
+        };
 
-        //create texture array, its size has to be power of 2, so we have to crop from 1280*720 to 1024*512
-        //DXT5 requires that its size also has to be a power of 4
         textureArray = new Texture2DArray(TEXTURE_WIDTH, TEXTURE_HEIGHT, maxPhotoNum, TextureFormat.DXT5, false);
         //   m_Texture = new Texture2D(m_CameraParameters.cameraResolutionWidth, m_CameraParameters.cameraResolutionHeight, TextureFormat.ARGB32, false);
         //init photocaptureobject
         PhotoCapture.CreateAsync(false, OnCreatedPhotoCaptureObject);
 
-        //Removes the need for saying "photo" and allows the user to use the clicker instead
-        //TODO Move this into it's own static gesture manager script.
-        recognizer = new GestureRecognizer(); //Uses a gesture recognizer
+        recognizer = new GestureRecognizer();
         recognizer.TappedEvent += (source, tapCount, ray) =>
         {
             OnPhotoKeyWordDetected();
@@ -198,9 +205,11 @@ public class TakePicture : Singleton<TakePicture>
 #endif
 
 
+        /*
         projectionMatrixList.Clear();
         worldToCameraMatrixList.Clear();
         currentPhoto = 0;
+        */
         //for debug
 
         projectionMatrixList.Add(projectionMatrix);

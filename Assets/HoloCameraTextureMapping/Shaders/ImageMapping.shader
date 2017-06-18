@@ -4,7 +4,7 @@
 	}
 	SubShader{
         Tags { "RenderType" = "Opaque" }
-        Cull Off ZWrite Off ZTest Always
+        Cull Off
 
 			//		LOD 200
         Pass
@@ -53,18 +53,24 @@
 				o.vertex = UnityObjectToClipPos(v.vertex);
 				//o.textureIndex = _TextureIndexArray[v.id];
 				//o.id = _TextureIndexArray[v.id];
-				//o.uv2.x = v.id;
+				o.uv2.x = _TextureIndexArray[v.id];
+                //o.uv2.x = v.id;
 				return o;
 			}
 			UNITY_DECLARE_TEX2DARRAY(_TextureArray);
 
 			fixed4 frag(v2f i) : SV_Target
 	    	{
-//float3 uvz = float3(i.uv.x, i.uv.y, i.uv2.x);
-                float3 uvz = float3(i.uv.x, i.uv.y, 0);
+                fixed4 color = fixed4(0, 0, 0, 1);
+				//float3 uvz = float3(i.uv.x, i.uv.y, i.uv2.x);
+				if (frac(i.uv2.x)) {
+					return color;
+				}
+				uint index = floor(i.uv2.x);
+                float3 uvz = float3(i.uv.x, i.uv.y, index);
                 //float3 uvz = float3(0.2, 0.9, 0);
 				//return float4(1, 1, 1, 1);
-				fixed4 color = fixed4(0, 0, 0, 1);
+//				fixed4 color = fixed4(0, 0, 0, 1);
 				if (!any(saturate(i.uv) - i.uv)) {
 					color = UNITY_SAMPLE_TEX2DARRAY(_TextureArray, uvz);
 				}

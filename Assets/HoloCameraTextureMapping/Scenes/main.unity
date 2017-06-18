@@ -172,7 +172,7 @@ MonoBehaviour:
   worldToCameraMatrixArray: []
   projectionMatrixArray: []
   textureArray: {fileID: 0}
-  maxPhotoNum: 1
+  maxPhotoNum: 100
   lockCameraSettings: 1
   projectionMatrixList: []
   worldToCameraMatrixList: []
@@ -466,6 +466,11 @@ Prefab:
         type: 2}
       propertyPath: drawVisualMeshes
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000012149591842, guid: 2ed75ffdf9031c94e8bce4b3d17b9928,
+        type: 2}
+      propertyPath: SimulatedUpdatePeriodInSeconds
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 2ed75ffdf9031c94e8bce4b3d17b9928, type: 2}
