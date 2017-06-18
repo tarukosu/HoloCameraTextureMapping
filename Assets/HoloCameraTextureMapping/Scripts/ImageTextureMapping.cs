@@ -49,6 +49,7 @@ namespace HoloCameraTextureMapping
             textureList.Add(texture);
             */
             var mesh = GetComponent<MeshFilter>().mesh;
+
             var vertices = mesh.vertices;
 
             var uvArray = new float[vertices.Length * 2];
@@ -61,7 +62,8 @@ namespace HoloCameraTextureMapping
             foreach (var v in vertices)
             {
                 //Vector2 uv = -Vector2.one;
-                Vector2 uv = Vector2.zero;
+                //Vector2 uv = Vector2.zero;
+                Vector2 uv = Vector2.one;
                 var textureIndex = 0;
 
                 for (int i = 0; i < worldToCameraMatrixList.Count; i++)
@@ -79,7 +81,8 @@ namespace HoloCameraTextureMapping
                     }
 
                     var projectionPosition = pm.MultiplyPoint(cameraPosition);
-                    var projectionUV = new Vector2(projectionPosition.x, projectionPosition.y);
+                    //var projectionUV = new Vector2(projectionPosition.x/ projectionPosition.z, projectionPosition.y/ projectionPosition.z);
+                    var projectionUV = new Vector2(projectionPosition.x , projectionPosition.y );
                     //Debug.Log(position);
                     //Debug.Log(projectionUV);
                     /*
@@ -94,25 +97,31 @@ namespace HoloCameraTextureMapping
                     }
                     if (Mathf.Abs(projectionUV.x) <= 1.0f && Mathf.Abs(projectionUV.y) <= 1.0f)
                     {
-                        uv = 0.5f * projectionUV + 0.5f * Vector2.one;
-                        textureIndex = i;
-
                         if ((uv.x < (1024.0 / 1280.0)) && (uv.y > (208.0 / 720.0)))
                         {
+                            uv = 0.5f * projectionUV + 0.5f * Vector2.one;
                             uv.x = uv.x * (1280.0f / 1024.0f);
                             uv.y = uv.y * (720.0f / 512.0f) - (208.0f / 512.0f);
+                            textureIndex = i + 1;
                             break;
                         }
                         else
                         {
+                            //uv.x = uv.x * (1280.0f / 1024.0f);
+                            //uv.y = uv.y * (720.0f / 512.0f) - (208.0f / 512.0f);
                             continue;
                         }
                     }
                     else
                     {
+                        // Debug.Log("uv");
+                        //Debug.Log(uv);
+                        //uv
                         continue;
-                        uv.x = projectionUV.x;
-                        uv.y = projectionUV.y;
+                        //uv.x = 0.0f;
+                        //uv.y = 0.0f;
+                        //uv.x = Mathf.Clamp01(projectionUV.x);
+                        //uv.y = Mathf.Clamp01(projectionUV.y);
                     }
                     //break;
                 }

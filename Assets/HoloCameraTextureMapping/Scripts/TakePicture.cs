@@ -57,7 +57,7 @@ public class TakePicture : Singleton<TakePicture>
     public event Action OnTextureUpdated;
 
 #region debug
-    public Texture2D SampleTexture;
+    public Texture2D[] SampleTexture;
 #endregion
     // Use this for initialization
     void Start()
@@ -85,7 +85,7 @@ public class TakePicture : Singleton<TakePicture>
     {
         while (true)
         {
-            yield return new WaitForSeconds(3);
+            yield return new WaitForSeconds(2);
             OnPhotoCapturedDebug();
         }
     }
@@ -108,6 +108,18 @@ public class TakePicture : Singleton<TakePicture>
         };
 
         textureArray = new Texture2DArray(TEXTURE_WIDTH, TEXTURE_HEIGHT, maxPhotoNum, TextureFormat.DXT5, false);
+        var clearTexture = new Texture2D(TEXTURE_WIDTH, TEXTURE_HEIGHT, TextureFormat.ARGB32, false);
+        //Color resetColor = Color.clear;
+        var resetColorArray = clearTexture.GetPixels();
+        for (int i = 0; i < resetColorArray.Length; i++)
+        {
+            resetColorArray[i] = Color.clear;
+        }
+        clearTexture.SetPixels(resetColorArray);
+        clearTexture.Apply();
+        clearTexture.Compress(true);
+
+        Graphics.CopyTexture(clearTexture, 0, 0, textureArray, 0, 0); //Copies the last texture
         //   m_Texture = new Texture2D(m_CameraParameters.cameraResolutionWidth, m_CameraParameters.cameraResolutionHeight, TextureFormat.ARGB32, false);
         //init photocaptureobject
         PhotoCapture.CreateAsync(false, OnCreatedPhotoCaptureObject);
@@ -198,10 +210,10 @@ public class TakePicture : Singleton<TakePicture>
         Debug.Log(projectionMatrix);
         /*
         2.43241 0.00000 0.07031 0.00000
-0.00000 4.31949 0.02752 0.00000
-0.00000 0.00000 - 1.00000    0.00000
-0.00000 0.00000 - 1.00000    0.00000
-*/
+        0.00000 4.31949 0.02752 0.00000
+        0.00000 0.00000 - 1.00000    0.00000
+        0.00000 0.00000 - 1.00000    0.00000
+        */
 #endif
 
 
@@ -239,7 +251,7 @@ public class TakePicture : Singleton<TakePicture>
         m_Texture.Compress(true);
         Debug.Log(m_Texture.format);
         //debug
-        Graphics.CopyTexture(m_Texture, 0, 0, textureArray, currentPhoto, 0); //Copies the last texture
+        Graphics.CopyTexture(m_Texture, 0, 0, textureArray, currentPhoto + 1, 0); //Copies the last texture
         //
         worldToCameraMatrixArray[currentPhoto] = worldToCameraMatrixList[currentPhoto];
         projectionMatrixArray[currentPhoto] = projectionMatrixList[currentPhoto];
@@ -276,11 +288,24 @@ public class TakePicture : Singleton<TakePicture>
 
     void OnPhotoCapturedDebug()
     {
+        if (currentPhoto == SampleTexture.Length)
+        {
+            return;
+        }
         //get this renderer
         Renderer m_CanvasRenderer = GetComponent<Renderer>() as Renderer;
         // m_CanvasRenderer.material = new Material(Shader.Find("Unlit/ColorRoomShader"));
         //temp to store the matrix
         Matrix4x4 cameraToWorldMatrix = Matrix4x4.identity;
+        cameraToWorldMatrix.m00 = -1f;
+        cameraToWorldMatrix.m11 = -1f;
+        cameraToWorldMatrix.m22 = -1f;
+        
+        if(currentPhoto % SampleTexture.Length == 1)
+        {
+            cameraToWorldMatrix.m03 = 1f;
+        }
+
         //photoCaptureFrame.TryGetCameraToWorldMatrix(out cameraToWorldMatrix);
         Matrix4x4 worldToCameraMatrix = cameraToWorldMatrix.inverse;
 
@@ -300,22 +325,34 @@ public class TakePicture : Singleton<TakePicture>
         0.00000 0.00000 - 1.00000    0.00000
         */
         //for debug
+
+        /*
         projectionMatrixList.Clear();
         worldToCameraMatrixList.Clear();
         currentPhoto = 0;
+        */
         //for debug
 
         projectionMatrixList.Add(projectionMatrix);
         worldToCameraMatrixList.Add(worldToCameraMatrix);
 
+        /*
+        if (currentPhoto == SampleTexture.Length - 1)
+        {
+            return;
+        }
+        */
 
-        Debug.Log(SampleTexture.format);
+
+        var texture = SampleTexture[currentPhoto % SampleTexture.Length];
+        Debug.Log(texture.format);
+
 
         //SampleTexture = ResizeTexture(SampleTexture, TEXTURE_WIDTH, TEXTURE_HEIGHT);
 
         //textureArray = new Texture2DArray(SampleTexture.width, SampleTexture.height, 1, TextureFormat.DXT5, false);
         //Graphics.CopyTexture(SampleTexture, 0, 0, textureArray, 0, 0);
-        Graphics.CopyTexture(SampleTexture, 0, 0, textureArray, 0, 0);
+        Graphics.CopyTexture(texture, 0, 0, textureArray, currentPhoto + 1, 0);
 
         /*
         //m_Texture = new Texture2D(m_CameraParameters.cameraResolutionWidth, m_CameraParameters.cameraResolutionHeight, TextureFormat.RGBA32, false);
@@ -344,7 +381,7 @@ public class TakePicture : Singleton<TakePicture>
         }
         currentPhoto += 1; //Increments the counter
         isCapturingPhoto = false;
-        Resources.UnloadUnusedAssets();
+        //Resources.UnloadUnusedAssets();
     }
 
     //Helper function to resize from top left
