@@ -85,7 +85,7 @@ public class TakePicture : Singleton<TakePicture>
     {
         while (true)
         {
-            yield return new WaitForSeconds(2);
+            yield return new WaitForSeconds(4);
             OnPhotoCapturedDebug();
         }
     }

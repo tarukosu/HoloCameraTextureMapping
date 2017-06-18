@@ -51,23 +51,36 @@ namespace HoloCameraTextureMapping
             var mesh = GetComponent<MeshFilter>().mesh;
 
             var vertices = mesh.vertices;
+            var triangles = mesh.triangles;
 
-            var uvArray = new float[vertices.Length * 2];
+            //var uvArray = new float[vertices.Length * 2];
+            var uvArray = new float[vertices.Length * 2 * (worldToCameraMatrixList.Count+1)];
             var textureIndexArray = new int[vertices.Length];
 
             var index = 0;
 
             Debug.Log(vertices.Length);
 
+            //Vector2 uv = Vector2.one;
+            //var textureIndex = 0;
             foreach (var v in vertices)
             {
                 //Vector2 uv = -Vector2.one;
-                //Vector2 uv = Vector2.zero;
-                Vector2 uv = Vector2.one;
+                Vector2 uv = Vector2.zero;
+                //Vector2 uv = Vector2.one;
                 var textureIndex = 0;
+                var score = 0f;
+                /* set default texture */
+                uvArray[2 * index * (worldToCameraMatrixList.Count + 1)] = uv.x;
+                uvArray[2 * index * (worldToCameraMatrixList.Count + 1) + 1] = uv.y;
 
                 for (int i = 0; i < worldToCameraMatrixList.Count; i++)
                 {
+                    //Debug.Log(i);
+                    //set default value
+                    uvArray[2 * index * (worldToCameraMatrixList.Count + 1) + 2 * (i+1)] = 0f;
+                    uvArray[2 * index * (worldToCameraMatrixList.Count + 1) + 2 * (i+1) + 1] = 0f;
+
                     var position = transform.TransformPoint(new Vector3(v.x, v.y, v.z));
                     //var position = new Vector4(v.x, v.y, v.z, 1.0f);
 
@@ -102,11 +115,27 @@ namespace HoloCameraTextureMapping
                             uv = 0.5f * projectionUV + 0.5f * Vector2.one;
                             uv.x = uv.x * (1280.0f / 1024.0f);
                             uv.y = uv.y * (720.0f / 512.0f) - (208.0f / 512.0f);
-                            textureIndex = i + 1;
-                            break;
+
+                            var newScore = 10 - Mathf.Abs(uv.x - 0.5f) - Mathf.Abs(uv.y - 0.5f);
+                            if (score <= newScore)
+                            {
+                                score = newScore;
+                                textureIndex = i + 1;
+                            }
+
+                            uvArray[2 * index * (worldToCameraMatrixList.Count + 1) + 2 * (i+1)] = uv.x;
+                            uvArray[2 * index * (worldToCameraMatrixList.Count + 1) + 2 * (i+1) + 1] = uv.y;
+                            continue;
+                            //break;
                         }
                         else
                         {
+                            uv = 0.5f * projectionUV + 0.5f * Vector2.one;
+                            uv.x = uv.x * (1280.0f / 1024.0f);
+                            uv.y = uv.y * (720.0f / 512.0f) - (208.0f / 512.0f);
+                            uvArray[2 * index * (worldToCameraMatrixList.Count + 1) + 2 * (i+1)] = uv.x;
+                            uvArray[2 * index * (worldToCameraMatrixList.Count + 1) + 2 * (i+1) + 1] = uv.y;
+
                             //uv.x = uv.x * (1280.0f / 1024.0f);
                             //uv.y = uv.y * (720.0f / 512.0f) - (208.0f / 512.0f);
                             continue;
@@ -122,17 +151,21 @@ namespace HoloCameraTextureMapping
                         //uv.y = 0.0f;
                         //uv.x = Mathf.Clamp01(projectionUV.x);
                         //uv.y = Mathf.Clamp01(projectionUV.y);
-                    }
+                   }
                     //break;
                 }
-                //Debug.Log("uv");
-                //Debug.Log(uv);
+                
+                /*
                 uvArray[2 * index] = uv.x;
-                //index += 1;
                 uvArray[2 * index + 1] = uv.y;
-
+                */
 
                 textureIndexArray[index] = textureIndex;
+
+                if(textureIndex == 2)
+                {
+                    Debug.Log("hoge");
+                }
 
                 index += 1;
 
@@ -147,10 +180,14 @@ namespace HoloCameraTextureMapping
                 index += 1;
                 */
             }
-            if (uvArray.Length > 0)
+            for (int i = 0; i < textureIndexArray.Length; i++)
             {
-                Debug.Log(uvArray[0]);
-                Debug.Log("texture: " + textureIndexArray[0]);
+                if (textureIndexArray[i] != 0)
+                {
+                    Debug.Log(uvArray[2 * i * (worldToCameraMatrixList.Count + 1) + 2 * textureIndexArray[i]]);
+                    Debug.Log("texture: " + textureIndexArray[i]);
+                    break;
+                }
             }
             //return;
             //Debug.Log(uvArray[0]);
@@ -161,7 +198,7 @@ namespace HoloCameraTextureMapping
             {
                 return;
             }
-            buffer = new ComputeBuffer(vertices.Length, sizeof(float) * 2);
+            buffer = new ComputeBuffer(vertices.Length * (worldToCameraMatrixList.Count+1), sizeof(float) * 2);
             buffer.SetData(uvArray);
             material.SetBuffer("_UVArray", buffer);
 
@@ -169,7 +206,7 @@ namespace HoloCameraTextureMapping
             textureIndexBuffer.SetData(textureIndexArray);
             material.SetBuffer("_TextureIndexArray", textureIndexBuffer);
 
-            
+            material.SetInt("_TextureCount", worldToCameraMatrixList.Count + 1);
             //set texture
             /*
             var width = texture.width;
