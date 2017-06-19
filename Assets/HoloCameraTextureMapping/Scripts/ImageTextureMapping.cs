@@ -5,7 +5,7 @@ namespace HoloCameraTextureMapping
 {
     public class ImageTextureMapping : MonoBehaviour
     {
-        public Texture2D SampleTexture;
+        //public Texture2D SampleTexture;
         private ComputeBuffer buffer;
         private ComputeBuffer textureIndexBuffer;
 
@@ -59,7 +59,7 @@ namespace HoloCameraTextureMapping
 
             var index = 0;
 
-            Debug.Log(vertices.Length);
+            //Debug.Log(vertices.Length);
 
             //Vector2 uv = Vector2.one;
             //var textureIndex = 0;
@@ -165,7 +165,7 @@ namespace HoloCameraTextureMapping
 
                 if(textureIndex == 1)
                 {
-                    Debug.Log("hoge");
+                    //Debug.Log("hoge");
                 }
 
                 index += 1;
@@ -185,8 +185,8 @@ namespace HoloCameraTextureMapping
             {
                 if (textureIndexArray[i] != 0)
                 {
-                    Debug.Log(uvArray[2 * i * (worldToCameraMatrixList.Count + 1) + 2 * textureIndexArray[i] + 1]);
-                    Debug.Log("texture: " + textureIndexArray[i]);
+                    //Debug.Log(uvArray[2 * i * (worldToCameraMatrixList.Count + 1) + 2 * textureIndexArray[i] + 1]);
+                    //Debug.Log("texture: " + textureIndexArray[i]);
                     break;
                 }
             }

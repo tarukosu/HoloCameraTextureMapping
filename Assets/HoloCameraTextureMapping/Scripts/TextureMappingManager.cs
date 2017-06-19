@@ -3,20 +3,23 @@ using UnityEngine;
 using HoloToolkit.Unity;
 using System.Collections.Generic;
 using System;
+using System.Collections;
 
 namespace HoloCameraTextureMapping
 {
     public class TextureMappingManager : Singleton<TextureMappingManager>
     {
         public GameObject SpatialMapping;
-        public Texture2D SampleTexture;
+        //public Texture2D SampleTexture;
         public Material TextureMappingMaterial;
 
-        public Texture2DArray texture2DArray;
-        public List<Matrix4x4> worldToCameraMatrixList = new List<Matrix4x4>();
-        public List<Matrix4x4> projectionMatrixList = new List<Matrix4x4>();
+        //public Texture2DArray texture2DArray;
+        //public List<Matrix4x4> worldToCameraMatrixList = new List<Matrix4x4>();
+        //public List<Matrix4x4> projectionMatrixList = new List<Matrix4x4>();
 
         public List<GameObject> SampleObjects;
+
+        private bool scanComplete = false;
 
 
         private new void Awake()
@@ -57,11 +60,56 @@ namespace HoloCameraTextureMapping
             {
                 spatialMappingManager.SetSurfaceMaterial(TextureMappingMaterial);
             }
-            //TODO
-            //debug
+
+            // Use Spatial Understanding
+            //SpatialUnderstanding.Instance.ScanStateChanged += Instance_ScanStateChanged;
+            //SpatialUnderstanding.Instance.OnScanDone += Instance_ScanStateChanged;
+            SpatialUnderstanding.Instance.RequestBeginScanning();
 
             TakePicture.Instance.OnTextureUpdated += OnTextureUpdate;
+
+            StartCoroutine(FinishScanning());
+            StartCoroutine(UpdateTexture());
         }
+        private void Update()
+        {
+            if (scanComplete)
+            {
+                Debug.Log("scan completed!!");
+                SpatialUnderstanding.Instance.RequestFinishScan();
+                OnTextureUpdate();
+                scanComplete = false;
+            }
+        }
+
+        private IEnumerator FinishScanning()
+        {
+            yield return new WaitForSeconds(15);
+            SpatialUnderstanding.Instance.RequestFinishScan();
+            Debug.Log("finish!");
+            OnTextureUpdate();
+        }
+
+        private IEnumerator UpdateTexture()
+        {
+            while (true)
+            {
+                OnTextureUpdate();
+                yield return new WaitForSeconds(10);
+            }
+        }
+
+        /*
+        private void Instance_ScanStateChanged()
+        {
+            if ((SpatialUnderstanding.Instance.ScanState == SpatialUnderstanding.ScanStates.Done)
+                && SpatialUnderstanding.Instance.AllowSpatialUnderstanding)
+            {
+                scanComplete = true;
+            }
+        }
+        */
+
 
         private void SpatialMappingSource_SurfaceAdded(object sender, DataEventArgs<SpatialMappingSource.SurfaceObject> e)
         {
