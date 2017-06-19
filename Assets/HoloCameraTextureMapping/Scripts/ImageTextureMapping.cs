@@ -66,20 +66,20 @@ namespace HoloCameraTextureMapping
             foreach (var v in vertices)
             {
                 //Vector2 uv = -Vector2.one;
-                Vector2 uv = Vector2.zero;
-                //Vector2 uv = Vector2.one;
+                //Vector2 uv = Vector2.zero;
+                Vector2 uv = Vector2.one;
                 var textureIndex = 0;
                 var score = 0f;
                 /* set default texture */
-                uvArray[2 * index * (worldToCameraMatrixList.Count + 1)] = uv.x;
-                uvArray[2 * index * (worldToCameraMatrixList.Count + 1) + 1] = uv.y;
+                uvArray[2 * index * (worldToCameraMatrixList.Count + 1)] = 0f;
+                uvArray[2 * index * (worldToCameraMatrixList.Count + 1) + 1] = 0f;
 
                 for (int i = 0; i < worldToCameraMatrixList.Count; i++)
                 {
                     //Debug.Log(i);
                     //set default value
-                    uvArray[2 * index * (worldToCameraMatrixList.Count + 1) + 2 * (i+1)] = 0f;
-                    uvArray[2 * index * (worldToCameraMatrixList.Count + 1) + 2 * (i+1) + 1] = 0f;
+                    uvArray[2 * index * (worldToCameraMatrixList.Count + 1) + 2 * (i+1)] = -1f;
+                    uvArray[2 * index * (worldToCameraMatrixList.Count + 1) + 2 * (i+1) + 1] = -1f;
 
                     var position = transform.TransformPoint(new Vector3(v.x, v.y, v.z));
                     //var position = new Vector4(v.x, v.y, v.z, 1.0f);
@@ -108,11 +108,12 @@ namespace HoloCameraTextureMapping
                     {
                         continue;
                     }
-                    if (Mathf.Abs(projectionUV.x) <= 1.0f && Mathf.Abs(projectionUV.y) <= 1.0f)
+                    if (Mathf.Abs(projectionUV.x) <= 2.0f && Mathf.Abs(projectionUV.y) <= 2.0f)
                     {
+                        uv = 0.5f * projectionUV + 0.5f * Vector2.one;
+
                         if ((uv.x < (1024.0 / 1280.0)) && (uv.y > (208.0 / 720.0)))
                         {
-                            uv = 0.5f * projectionUV + 0.5f * Vector2.one;
                             uv.x = uv.x * (1280.0f / 1024.0f);
                             uv.y = uv.y * (720.0f / 512.0f) - (208.0f / 512.0f);
 
@@ -122,7 +123,7 @@ namespace HoloCameraTextureMapping
                                 score = newScore;
                                 textureIndex = i + 1;
                             }
-
+                            
                             uvArray[2 * index * (worldToCameraMatrixList.Count + 1) + 2 * (i+1)] = uv.x;
                             uvArray[2 * index * (worldToCameraMatrixList.Count + 1) + 2 * (i+1) + 1] = uv.y;
                             continue;
@@ -162,7 +163,7 @@ namespace HoloCameraTextureMapping
 
                 textureIndexArray[index] = textureIndex;
 
-                if(textureIndex == 2)
+                if(textureIndex == 1)
                 {
                     Debug.Log("hoge");
                 }
@@ -184,7 +185,7 @@ namespace HoloCameraTextureMapping
             {
                 if (textureIndexArray[i] != 0)
                 {
-                    Debug.Log(uvArray[2 * i * (worldToCameraMatrixList.Count + 1) + 2 * textureIndexArray[i]]);
+                    Debug.Log(uvArray[2 * i * (worldToCameraMatrixList.Count + 1) + 2 * textureIndexArray[i] + 1]);
                     Debug.Log("texture: " + textureIndexArray[i]);
                     break;
                 }
@@ -198,10 +199,18 @@ namespace HoloCameraTextureMapping
             {
                 return;
             }
+            if (buffer != null)
+            {
+                buffer.Release();
+            }
             buffer = new ComputeBuffer(vertices.Length * (worldToCameraMatrixList.Count+1), sizeof(float) * 2);
             buffer.SetData(uvArray);
             material.SetBuffer("_UVArray", buffer);
 
+            if (textureIndexBuffer != null)
+            {
+                textureIndexBuffer.Release();
+            }
             textureIndexBuffer = new ComputeBuffer(vertices.Length, sizeof(int));
             textureIndexBuffer.SetData(textureIndexArray);
             material.SetBuffer("_TextureIndexArray", textureIndexBuffer);

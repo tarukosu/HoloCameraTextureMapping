@@ -514,7 +514,7 @@ PlayerSettings:
   metroCertificatePassword: 
   metroCertificateSubject: DefaultCompany
   metroCertificateIssuer: DefaultCompany
-  metroCertificateNotAfter: 00bf6c0d1900d401
+  metroCertificateNotAfter: 80d08b9d9e07d401
   metroApplicationDescription: HoloCameraTextureMapping
   wsaImages: {}
   metroTileShortName: 

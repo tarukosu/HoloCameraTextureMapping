@@ -288,6 +288,14 @@ public class TakePicture : Singleton<TakePicture>
 
     void OnPhotoCapturedDebug()
     {
+        /*
+        if (currentPhoto == 1)
+        {
+            return;
+        }
+        */
+
+
         if (currentPhoto == SampleTexture.Length)
         {
             return;
@@ -303,7 +311,7 @@ public class TakePicture : Singleton<TakePicture>
         
         if(currentPhoto % SampleTexture.Length == 1)
         {
-            cameraToWorldMatrix.m03 = 1f;
+            cameraToWorldMatrix.m03 = 0.3f;
         }
 
         //photoCaptureFrame.TryGetCameraToWorldMatrix(out cameraToWorldMatrix);
@@ -349,6 +357,7 @@ public class TakePicture : Singleton<TakePicture>
 
 
         //SampleTexture = ResizeTexture(SampleTexture, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+        //texture = ResizeTexture(texture, TEXTURE_WIDTH, TEXTURE_HEIGHT);
 
         //textureArray = new Texture2DArray(SampleTexture.width, SampleTexture.height, 1, TextureFormat.DXT5, false);
         //Graphics.CopyTexture(SampleTexture, 0, 0, textureArray, 0, 0);
