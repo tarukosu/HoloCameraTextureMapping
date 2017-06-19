@@ -1,4 +1,13 @@
-﻿using UnityEngine;
+﻿/*
+ * Copyright 2017 tarukosu
+ * This file contains Original Code and/or Modifications of Original Code
+ * licensed under the Apache License, Version 2.0 (the "License");
+ * Orignal Code is
+ *  Copyright 2017 ywj7931
+ *  https://github.com/ywj7931/Hololens_Image_Based_Texture/blob/master/Assets/Scripts/TakePicture.cs
+ */
+ 
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.VR.WSA.WebCam;
