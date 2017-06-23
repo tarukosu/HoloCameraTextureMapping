@@ -5,26 +5,15 @@ namespace HoloCameraTextureMapping
 {
     public class ImageTextureMapping : MonoBehaviour
     {
-        //public Texture2D SampleTexture;
         private ComputeBuffer buffer;
         private ComputeBuffer textureIndexBuffer;
 
-        /*
-        private List<Matrix4x4> worldToCameraMatrixList = new List<Matrix4x4>();
-        private List<Matrix4x4> projectionMatrixList = new List<Matrix4x4>();
-        private List<Texture2D> textureList = new List<Texture2D>();
-        */
-
-        // Use this for initialization
         void Start()
         {
-            //UpdateTexture();
         }
 
-        // Update is called once per frame
         void Update()
         {
-
         }
 
         private void OnDestroy()
@@ -40,14 +29,8 @@ namespace HoloCameraTextureMapping
 
         }
 
-        //public void AddTextureMapping(Matrix4x4 worldToCameraMatrix, Matrix4x4 projectionMatrix, Texture2D texture)
         public void ApplyTextureMapping(List<Matrix4x4> worldToCameraMatrixList, List<Matrix4x4> projectionMatrixList, Texture2DArray textureArray)
         {
-            /*
-            worldToCameraMatrixList.Add(worldToCameraMatrix);
-            projectionMatrixList.Add(projectionMatrix);
-            textureList.Add(texture);
-            */
             var mesh = GetComponent<MeshFilter>().mesh;
 
             var vertices = mesh.vertices;

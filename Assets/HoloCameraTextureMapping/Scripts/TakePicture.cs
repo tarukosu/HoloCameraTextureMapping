@@ -27,15 +27,16 @@ using Windows.Media.Devices;
 public class TakePicture : Singleton<TakePicture>
 {
     //data copying fronm list to pass to shader
-    public Matrix4x4[] worldToCameraMatrixArray;
-    public Matrix4x4[] projectionMatrixArray;
+    //public Matrix4x4[] worldToCameraMatrixArray;
+    //public Matrix4x4[] projectionMatrixArray;
+    [System.NonSerialized]
     public Texture2DArray textureArray;
 
     //the max photos numbers that can be taken, shader doesn't support dynamic array
     public int maxPhotoNum;
     //Locks in the exposure and white balance after first photo.
     public bool lockCameraSettings = true;
-    Texture2D destTex;
+    //Texture2D destTex;
 
     //camera paramaters
     private CameraParameters m_CameraParameters;
@@ -44,7 +45,9 @@ public class TakePicture : Singleton<TakePicture>
 
     //temp data waiting to pass to shader
     //private List<Texture2D> textureList;
+    [System.NonSerialized]
     public List<Matrix4x4> projectionMatrixList;
+    [System.NonSerialized]
     public List<Matrix4x4> worldToCameraMatrixList;
 
 
@@ -54,7 +57,7 @@ public class TakePicture : Singleton<TakePicture>
     private GestureRecognizer recognizer;
 
     public GameObject SpatialMapping;
-    private ImageTextureMapping[] imageTextureMappingList;
+    //private ImageTextureMapping[] imageTextureMappingList;
 #if UNITY_EDITOR
     private const int TEXTURE_WIDTH = 512;
     private const int TEXTURE_HEIGHT = 256;
@@ -67,24 +70,23 @@ public class TakePicture : Singleton<TakePicture>
 
 #region debug
     public Texture2D[] SampleTexture;
-#endregion
-    // Use this for initialization
+    #endregion
+
     void Start()
     {
         //init
         //textureList = new List<Texture2D>();
         projectionMatrixList = new List<Matrix4x4>();
-        worldToCameraMatrixArray = new Matrix4x4[maxPhotoNum];
-        projectionMatrixArray = new Matrix4x4[maxPhotoNum];
+        //worldToCameraMatrixArray = new Matrix4x4[maxPhotoNum];
+        //projectionMatrixArray = new Matrix4x4[maxPhotoNum];
         worldToCameraMatrixList = new List<Matrix4x4>();
 
         //init camera
         InitCamera();
 
-        imageTextureMappingList = SpatialMapping.GetComponentsInChildren<ImageTextureMapping>();
+        //imageTextureMappingList = SpatialMapping.GetComponentsInChildren<ImageTextureMapping>();
 
         //for debug
-        //OnPhotoCapturedDebug();
 #if UNITY_EDITOR
         StartCoroutine(DebugCapture());
 #endif
@@ -197,52 +199,18 @@ public class TakePicture : Singleton<TakePicture>
         Matrix4x4 projectionMatrix;
         photoCaptureFrame.TryGetProjectionMatrix(out projectionMatrix);
 
-        //add to matrixList
-
-        //for debug
-        Debug.Log("hogehoge");
-        Debug.Log(projectionMatrix);
-        Debug.Log(projectionMatrix.m00);
-        Debug.Log(projectionMatrix.m01);
-        Debug.Log(projectionMatrix.m02);
-        Debug.Log(projectionMatrix.m03);
-
-        //projectionMatrix.m00 = 320;
 #if UNITY_EDITOR
-        projectionMatrix.m00 = 2.43241f;
-        projectionMatrix.m02 = 0.07031f;
-        projectionMatrix.m11 = 4.31949f;
-        projectionMatrix.m12 = 0.02752f;
-        projectionMatrix.m22 = -1f;
-        projectionMatrix.m32 = -1f;
-        projectionMatrix.m33 = 0f;
-        Debug.Log(projectionMatrix);
-        /*
-        2.43241 0.00000 0.07031 0.00000
-        0.00000 4.31949 0.02752 0.00000
-        0.00000 0.00000 - 1.00000    0.00000
-        0.00000 0.00000 - 1.00000    0.00000
-        */
+        projectionMatrix = GetDummyProjectionMatrix();
 #endif
-
-
-        /*
-        projectionMatrixList.Clear();
-        worldToCameraMatrixList.Clear();
-        currentPhoto = 0;
-        */
-        //for debug
 
         projectionMatrixList.Add(projectionMatrix);
         worldToCameraMatrixList.Add(worldToCameraMatrix);
-
 
         m_Texture = new Texture2D(m_CameraParameters.cameraResolutionWidth, m_CameraParameters.cameraResolutionHeight, TextureFormat.RGBA32, false);
         photoCaptureFrame.UploadImageDataToTexture(m_Texture);
 
         m_Texture.wrapMode = TextureWrapMode.Clamp;
 
-        //m_Texture = ResizeTexture(m_Texture, 1024, 512);
         m_Texture = ResizeTexture(m_Texture, TEXTURE_WIDTH, TEXTURE_HEIGHT);
         //TODO 
 
@@ -254,43 +222,19 @@ public class TakePicture : Singleton<TakePicture>
         //write to LocalState folder
         File.WriteAllBytes(Application.persistentDataPath + "/Room" + (currentPhoto + 1) + ".png", bytes);
 
-
-        //update matrix and texturearray in shader
-        //Graphics.CopyTexture(textureList[textureList.Count - 1], 0, 0, array, textureList.Count - 1, 0);
         m_Texture.Compress(true);
-        Debug.Log(m_Texture.format);
-        //debug
-        Graphics.CopyTexture(m_Texture, 0, 0, textureArray, currentPhoto + 1, 0); //Copies the last texture
+        Graphics.CopyTexture(m_Texture, 0, 0, textureArray, currentPhoto + 1, 0); 
+        //Copies the last texture
         //
-        worldToCameraMatrixArray[currentPhoto] = worldToCameraMatrixList[currentPhoto];
-        projectionMatrixArray[currentPhoto] = projectionMatrixList[currentPhoto];
+        //worldToCameraMatrixArray[currentPhoto] = worldToCameraMatrixList[currentPhoto];
+        //projectionMatrixArray[currentPhoto] = projectionMatrixList[currentPhoto];
 
         if (OnTextureUpdated != null)
         {
             OnTextureUpdated();
         }
-        /*
-        imageTextureMappingList = SpatialMapping.GetComponentsInChildren<ImageTextureMapping>();
-        foreach (var imageTextureMapping in imageTextureMappingList)
-        {
-
-            imageTextureMapping.AddTextureMapping(worldToCameraMatrix, projectionMatrix, m_Texture);
-            //imageTextureMapping.UpdateTextureMapping(worldToCameraMatrix, projectionMatrix, m_Texture);
-            //imageTextureMapping.UpdateTextureMapping();
-            }
-        */
-        //set shader properties
-
-        /*
-        GetComponent<Renderer>().sharedMaterial.SetTexture("_MyArr", array);
-        GetComponent<Renderer>().sharedMaterial.SetMatrixArray("_WorldToCameraMatrixArray", worldToCameraMatrixArray);
-        GetComponent<Renderer>().sharedMaterial.SetMatrixArray("_CameraProjectionMatrixArray", projectionMatrixArray);
-        */
-        //TextManager.Instance.setText(currentPhoto + 1 + " Photos Taken");
-        currentPhoto += 1; //Increments the counter
-
+        currentPhoto += 1;
         isCapturingPhoto = false;
-
         Resources.UnloadUnusedAssets();
     }
 
@@ -325,44 +269,12 @@ public class TakePicture : Singleton<TakePicture>
 
         //photoCaptureFrame.TryGetCameraToWorldMatrix(out cameraToWorldMatrix);
         Matrix4x4 worldToCameraMatrix = cameraToWorldMatrix.inverse;
-
-        Matrix4x4 projectionMatrix = Matrix4x4.identity;
-        projectionMatrix.m00 = 2.43241f;
-        projectionMatrix.m02 = 0.07031f;
-        projectionMatrix.m11 = 4.31949f;
-        projectionMatrix.m12 = 0.02752f;
-        projectionMatrix.m22 = -1f;
-        projectionMatrix.m32 = -1f;
-        projectionMatrix.m33 = 0f;
-        Debug.Log(projectionMatrix);
-        /*
-        2.43241 0.00000 0.07031 0.00000
-        0.00000 4.31949 0.02752 0.00000
-        0.00000 0.00000 - 1.00000    0.00000
-        0.00000 0.00000 - 1.00000    0.00000
-        */
-        //for debug
-
-        /*
-        projectionMatrixList.Clear();
-        worldToCameraMatrixList.Clear();
-        currentPhoto = 0;
-        */
-        //for debug
+        Matrix4x4 projectionMatrix = GetDummyProjectionMatrix();
 
         projectionMatrixList.Add(projectionMatrix);
         worldToCameraMatrixList.Add(worldToCameraMatrix);
 
-        /*
-        if (currentPhoto == SampleTexture.Length - 1)
-        {
-            return;
-        }
-        */
-
-
         var texture = SampleTexture[currentPhoto % SampleTexture.Length];
-        Debug.Log(texture.format);
 
 
         //SampleTexture = ResizeTexture(SampleTexture, TEXTURE_WIDTH, TEXTURE_HEIGHT);
@@ -372,34 +284,12 @@ public class TakePicture : Singleton<TakePicture>
         //Graphics.CopyTexture(SampleTexture, 0, 0, textureArray, 0, 0);
         Graphics.CopyTexture(texture, 0, 0, textureArray, currentPhoto + 1, 0);
 
-        /*
-        //m_Texture = new Texture2D(m_CameraParameters.cameraResolutionWidth, m_CameraParameters.cameraResolutionHeight, TextureFormat.RGBA32, false);
-        //photoCaptureFrame.UploadImageDataToTexture(m_Texture);
-
-        m_Texture.wrapMode = TextureWrapMode.Clamp;
-
-        //m_Texture = ResizeTexture(m_Texture, 1024, 512);
-        //m_Texture = ResizeTexture(m_Texture, TEXTURE_WIDTH, TEXTURE_HEIGHT);
-        //TODO 
-
-        //save room to png
-        bytes = m_Texture.EncodeToPNG();
-
-        //update matrix and texturearray in shader
-        //Graphics.CopyTexture(textureList[textureList.Count - 1], 0, 0, array, textureList.Count - 1, 0);
-        m_Texture.Compress(true);
-        Debug.Log(m_Texture.format);
-        Graphics.CopyTexture(m_Texture, 0, 0, textureArray, currentPhoto, 0); //Copies the last texture
-        worldToCameraMatrixArray[currentPhoto] = worldToCameraMatrixList[currentPhoto];
-        projectionMatrixArray[currentPhoto] = projectionMatrixList[currentPhoto];
-        */
         if (OnTextureUpdated != null)
         {
             OnTextureUpdated();
         }
-        currentPhoto += 1; //Increments the counter
+        currentPhoto += 1;
         isCapturingPhoto = false;
-        //Resources.UnloadUnusedAssets();
     }
 
     //Helper function to resize from top left
@@ -425,6 +315,25 @@ public class TakePicture : Singleton<TakePicture>
             photoCaptureObj.StopPhotoModeAsync(OnStoppedPhotoMode);
         }
         //TextManager.Instance.setText("");
+    }
+
+    protected Matrix4x4 GetDummyProjectionMatrix()
+    {
+        /*
+        2.43241 0.00000  0.07031 0.00000
+        0.00000 4.31949  0.02752 0.00000
+        0.00000 0.00000 -1.00000 0.00000
+        0.00000 0.00000 -1.00000 0.00000
+        */
+        Matrix4x4 projectionMatrix = Matrix4x4.identity;
+        projectionMatrix.m00 = 2.43241f;
+        projectionMatrix.m02 = 0.07031f;
+        projectionMatrix.m11 = 4.31949f;
+        projectionMatrix.m12 = 0.02752f;
+        projectionMatrix.m22 = -1f;
+        projectionMatrix.m32 = -1f;
+        projectionMatrix.m33 = 0f;
+        return projectionMatrix;
     }
 
 }
