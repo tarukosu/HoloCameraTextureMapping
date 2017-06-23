@@ -514,7 +514,7 @@ PlayerSettings:
   metroCertificatePassword: 
   metroCertificateSubject: DefaultCompany
   metroCertificateIssuer: DefaultCompany
-  metroCertificateNotAfter: 00bf6c0d1900d401
+  metroCertificateNotAfter: 80d08b9d9e07d401
   metroApplicationDescription: HoloCameraTextureMapping
   wsaImages: {}
   metroTileShortName: 
@@ -612,7 +612,8 @@ PlayerSettings:
     daydream:
       daydreamIconForeground: {fileID: 0}
       daydreamIconBackground: {fileID: 0}
-  cloudServicesEnabled: {}
+  cloudServicesEnabled:
+    UNet: 1
   facebookSdkVersion: 7.9.1
   apiCompatibilityLevel: 2
   cloudProjectId: 1c3e65c6-e37c-456f-b1c3-f633775ede3e

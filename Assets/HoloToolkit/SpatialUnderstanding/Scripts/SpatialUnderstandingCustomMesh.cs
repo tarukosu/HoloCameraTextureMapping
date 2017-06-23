@@ -410,6 +410,7 @@ namespace HoloToolkit.Unity
         /// on their position in the world.
         /// </summary>
         /// <param name="vector">The vector to floor.</param>
+
         /// <returns>A floored vector</returns>
         private Vector3 VectorToSector(Vector3 vector)
         {
