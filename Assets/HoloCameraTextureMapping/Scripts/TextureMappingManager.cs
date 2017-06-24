@@ -50,11 +50,13 @@ namespace HoloCameraTextureMapping
 
         void Start()
         {
+            /*
             var spatialMappingManager = SpatialMappingManager.Instance;
             if (spatialMappingManager)
             {
                 spatialMappingManager.SetSurfaceMaterial(TextureMappingMaterial);
             }
+            */
 
             // Use Spatial Understanding
             //SpatialUnderstanding.Instance.ScanStateChanged += Instance_ScanStateChanged;
@@ -63,8 +65,8 @@ namespace HoloCameraTextureMapping
 
             TakePicture.Instance.OnTextureUpdated += OnTextureUpdate;
 
-            StartCoroutine(FinishScanning());
-            StartCoroutine(UpdateTexture());
+            //StartCoroutine(FinishScanning());
+            //StartCoroutine(UpdateTexture());
         }
 
         private void Update()
@@ -96,6 +98,11 @@ namespace HoloCameraTextureMapping
                 OnTextureUpdate();
                 yield return new WaitForSeconds(10);
             }
+        }
+
+        public void StartTextureMapping()
+        {
+            SpatialUnderstanding.Instance.UnderstandingCustomMesh.MeshMaterial = TextureMappingMaterial;
         }
 
         private void SpatialMappingSource_SurfaceAdded(object sender, DataEventArgs<SpatialMappingSource.SurfaceObject> e)

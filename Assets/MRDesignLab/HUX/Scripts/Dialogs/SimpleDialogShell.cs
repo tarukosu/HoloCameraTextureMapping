@@ -32,10 +32,12 @@ namespace HUX.Dialogs
         /*[SerializeField]
         private GameObject[] threeButtonSet;*/
 
+#if UNITY_EDITOR
         protected override void OnDrawGizmos()
         {
             messageText.text = WordWrap(messageText.text, MaxCharsPerLine);
         }
+#endif
 
         protected override void FinalizeLayout() {
             // nothing to do here

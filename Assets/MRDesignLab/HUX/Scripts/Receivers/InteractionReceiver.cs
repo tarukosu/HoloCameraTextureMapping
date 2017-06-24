@@ -123,10 +123,10 @@ namespace HUX.Receivers
 		}
 
 #if UNITY_EDITOR
-		/// <summary>
-		/// When selected draw lines to all linked interactibles
-		/// </summary>
-		protected virtual void OnDrawGizmosSelected()
+        /// <summary>
+        /// When selected draw lines to all linked interactibles
+        /// </summary>
+        protected virtual void OnDrawGizmosSelected()
 		{
 			if (this.Interactibles.Count > 0)
 			{

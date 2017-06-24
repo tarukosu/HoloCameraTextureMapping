@@ -135,22 +135,20 @@ public class TakePicture : Singleton<TakePicture>
         //init photocaptureobject
         PhotoCapture.CreateAsync(false, OnCreatedPhotoCaptureObject);
 
+        /*
         recognizer = new GestureRecognizer();
         recognizer.TappedEvent += (source, tapCount, ray) =>
         {
             OnPhotoKeyWordDetected();
         };
         recognizer.StartCapturingGestures();
+        */
     }
 
     void OnCreatedPhotoCaptureObject(PhotoCapture captureObject)
     {
-
         photoCaptureObj = captureObject;
-
-        //photoCaptureObj.StartPhotoModeAsync(m_CameraParameters, true, OnStartPhotoMode);
         photoCaptureObj.StartPhotoModeAsync(m_CameraParameters, OnStartPhotoMode);
-        //TODO Dispose PhotocaptureObj on cleanup
     }
 
     void OnStartPhotoMode(PhotoCapture.PhotoCaptureResult result)
@@ -158,6 +156,16 @@ public class TakePicture : Singleton<TakePicture>
         //TextManager.Instance.setText("Ready to take photos, say \"Photo\"");
     }
 
+    public void TakePhoto()
+    {
+        if (isCapturingPhoto)
+        {
+            return;
+        }
+        isCapturingPhoto = true;
+        photoCaptureObj.TakePhotoAsync(OnPhotoCaptured);
+    }
+    /*
     public void OnPhotoKeyWordDetected()
     {
         //if it is capturing photo now, just return
@@ -171,6 +179,7 @@ public class TakePicture : Singleton<TakePicture>
 
         photoCaptureObj.TakePhotoAsync(OnPhotoCaptured);
     }
+    */
 
     void OnPhotoCaptured(PhotoCapture.PhotoCaptureResult result, PhotoCaptureFrame photoCaptureFrame)
     {
