@@ -43,7 +43,6 @@ namespace HoloCameraTextureMapping
             var index = 0;
 
             //Debug.Log(vertices.Length);
-
             //Vector2 uv = Vector2.one;
             //var textureIndex = 0;
             foreach (var v in vertices)
@@ -54,8 +53,8 @@ namespace HoloCameraTextureMapping
                 var textureIndex = 0;
                 var score = 0f;
                 /* set default texture */
-                uvArray[2 * index * (worldToCameraMatrixList.Count + 1)] = 0f;
-                uvArray[2 * index * (worldToCameraMatrixList.Count + 1) + 1] = 0f;
+                uvArray[2 * index * (worldToCameraMatrixList.Count + 1)] = -1f;
+                uvArray[2 * index * (worldToCameraMatrixList.Count + 1) + 1] = -1f;
 
                 for (int i = 0; i < worldToCameraMatrixList.Count; i++)
                 {

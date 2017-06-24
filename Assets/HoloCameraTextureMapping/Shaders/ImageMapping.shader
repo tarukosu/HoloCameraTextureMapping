@@ -1,6 +1,7 @@
 ﻿Shader "Custom/ImageMapping" {
 	Properties {
         _TextureArray("TextureArray", 2DArray) = "" {}
+	
 	}
 	SubShader{
         Tags { "RenderType" = "Transparent" }
@@ -53,10 +54,11 @@
 			[maxvertexcount(9)]
 			void geom(triangle v2f IN[3], inout TriangleStream<g2f> tristream)
 			{
-				g2f o;
+				bool existValidMapping = false;
 
+				g2f o;
 				for (int mainPoint = 0; mainPoint < 3; ++mainPoint) {
-					float valid = 1;
+					bool valid = true;
 
 					for (int cnt = 0; cnt < 3; ++cnt)
 					{
@@ -65,8 +67,12 @@
 						float2 uv = _UVArray[_TextureCount * vertexId + textureId];
 
 						if (uv.x < -0.5 || uv.y < -0.5) {
-							valid = -1;
+							valid = false;
 						}
+					}
+
+					if (valid) {
+						existValidMapping = true;
 					}
 
 					for (int cnt = 0; cnt < 3; ++cnt)
@@ -74,15 +80,30 @@
 						uint vertexId = floor(IN[cnt].uv2.y);
 						uint textureId = floor(IN[mainPoint].uv2.x);
 						o.pos = IN[cnt].vertex;
+						//o.pos = IN[cnt].vertex + float4(0, mainPoint * 10, 0, 0);
 						o.uv = _UVArray[_TextureCount * vertexId + textureId];
 						o.uv2 = IN[mainPoint].uv2;
 
-						if (valid > 0) {
+						if (valid) {
 							o.uv2.x = floor(IN[mainPoint].uv2.x) + 0.00001;
+							tristream.Append(o);
 						}
 						else {
 							o.uv2.x = 0;
 						}
+
+					}
+					if (valid > 0) {
+						tristream.RestartStrip();
+					}
+				}
+
+				if (!existValidMapping) {
+					for (int cnt = 0; cnt < 3; ++cnt)
+					{
+						o.pos = IN[cnt].vertex;
+						o.uv = float2(0, 0);
+						o.uv2 = 0;
 						tristream.Append(o);
 					}
 					tristream.RestartStrip();

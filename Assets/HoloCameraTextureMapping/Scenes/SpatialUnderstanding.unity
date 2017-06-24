@@ -251,8 +251,8 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 511213276}
   m_LocalRotation: {x: -0.49500167, y: 0.012133499, z: -0.021628378, w: 0.8685381}
-  m_LocalPosition: {x: -3.5, y: -0.16389261, z: 35.6}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -3.5, y: -0.16389, z: 35.6}
+  m_LocalScale: {x: 1.5230713, y: 1.5230712, z: 1.5230712}
   m_Children: []
   m_Father: {fileID: 1931865215}
   m_RootOrder: 0
@@ -377,7 +377,7 @@ GameObject:
   - component: {fileID: 725023697}
   - component: {fileID: 725023696}
   m_Layer: 0
-  m_Name: Plane (2)
+  m_Name: Sphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -770,7 +770,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1931865215
 Transform:
   m_ObjectHideFlags: 0
