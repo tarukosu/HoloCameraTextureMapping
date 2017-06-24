@@ -14,8 +14,8 @@ namespace HoloCameraTextureMapping
 
         public List<GameObject> SampleObjects;
 
+        public event Action SpatialMappingCreated = delegate { };
         private bool scanComplete = false;
-
 
         private new void Awake()
         {
@@ -101,11 +101,14 @@ namespace HoloCameraTextureMapping
         private void SpatialMappingSource_SurfaceAdded(object sender, DataEventArgs<SpatialMappingSource.SurfaceObject> e)
         {
             ApplyTextureMapping(e.Data.Object);
+            Debug.Log("added");
+            SpatialMappingCreated();
         }
 
         private void SpatialMappingSource_SurfaceUpdated(object sender, DataEventArgs<SpatialMappingSource.SurfaceUpdate> e)
         {
             ApplyTextureMapping(e.Data.New.Object);
+            Debug.Log("updated");
         }
 
         private void ApplyTextureMapping(GameObject obj)
