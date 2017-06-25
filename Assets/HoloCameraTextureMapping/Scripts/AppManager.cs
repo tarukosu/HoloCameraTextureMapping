@@ -16,7 +16,7 @@ namespace HoloCameraTextureMapping {
 
         public AppStates State { get; protected set; }
         public GameObject DialogPrefab;
-        
+        public MiniatureRoom MiniatureRoom;
 
         protected SimpleDialog dialog;
         //protected SimpleDialog finishScanningdialog;
@@ -135,6 +135,7 @@ namespace HoloCameraTextureMapping {
                 }
                 //                SpatialUnderstanding.Instance.UnderstandingCustomMesh.MeshMaterial = TextureMappingManager.Instance.TextureMappingMaterial;
                 TextureMappingManager.Instance.StartTextureMapping();
+                MiniatureRoom.GenerateMesh();
 
                 ClearDialog();
                 SimpleDialog.ButtonTypeEnum buttons = SimpleDialog.ButtonTypeEnum.OK;

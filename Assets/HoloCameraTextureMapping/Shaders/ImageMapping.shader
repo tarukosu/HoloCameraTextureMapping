@@ -4,12 +4,14 @@
 	
 	}
 	SubShader{
-        Tags { "RenderType" = "Transparent" }
+        Tags { "RenderType" = "Transparent" "Queue" = "Transparent" }
         Cull Off
+		Blend SrcAlpha OneMinusSrcAlpha
 		//ZWrite Off
 		//LOD 200
         Pass
         {
+     //		Offset 50, 100
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag
@@ -114,6 +116,7 @@
 			fixed4 frag(g2f i) : SV_Target
 	    	{
                 fixed4 color = fixed4(0, 0, 0, 0);
+
 				//fixed4 color = fixed4(1, 1, 1, 1);
 				//float3 uvz = float3(i.uv.x, i.uv.y, i.uv2.x);
 
@@ -131,6 +134,7 @@
 					color = UNITY_SAMPLE_TEX2DARRAY(_TextureArray, uvz);
 				}
 				//color = UNITY_SAMPLE_TEX2DARRAY(_TextureArray, uvz);
+				//color = fixed4(0, 0, 0, 0);
 				return color;
     		}
 			ENDCG

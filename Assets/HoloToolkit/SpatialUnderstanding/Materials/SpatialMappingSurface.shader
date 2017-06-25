@@ -11,7 +11,7 @@ Shader "HoloToolkit/SpatialUnderstanding/Mapping"
     }
     SubShader
     {
-        Tags { "Queue" = "Transparent" }
+		Tags{ "Queue" = "Transparent" }
 
         Pass
         {

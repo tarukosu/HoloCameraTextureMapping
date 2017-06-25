@@ -11,11 +11,12 @@ namespace HoloCameraTextureMapping
     {
         public GameObject SpatialMapping;
         public Material TextureMappingMaterial;
-
         public List<GameObject> SampleObjects;
 
+        public MiniatureRoom MiniatureRoom;
+
         public event Action SpatialMappingCreated = delegate { };
-        private bool scanComplete = false;
+        //private bool scanComplete = false;
 
         private new void Awake()
         {
@@ -29,8 +30,10 @@ namespace HoloCameraTextureMapping
 
         }
 
-        private void OnTextureUpdate()
+        protected void OnTextureUpdated()
         {
+            StartCoroutine(UpdateAllMap());
+            /*
             var imageTextureMappingList = SpatialMapping.GetComponentsInChildren<ImageTextureMapping>();
             foreach (var imageTextureMapping in imageTextureMappingList)
             {
@@ -45,7 +48,31 @@ namespace HoloCameraTextureMapping
                     imageTextureMapping.ApplyTextureMapping(TakePicture.Instance.worldToCameraMatrixList, TakePicture.Instance.projectionMatrixList, TakePicture.Instance.textureArray);
                 }
             }
+            */
+        }
 
+        protected IEnumerator UpdateAllMap()
+        {
+            var imageTextureMappingList = SpatialMapping.GetComponentsInChildren<ImageTextureMapping>();
+            foreach (var imageTextureMapping in imageTextureMappingList)
+            {
+                imageTextureMapping.ApplyTextureMapping(TakePicture.Instance.worldToCameraMatrixList, TakePicture.Instance.projectionMatrixList, TakePicture.Instance.textureArray);
+                yield return null;
+            }
+
+
+            foreach (var obj in SampleObjects)
+            {
+                if (obj.activeInHierarchy)
+                {
+                    imageTextureMappingList = obj.GetComponentsInChildren<ImageTextureMapping>();
+                    foreach (var imageTextureMapping in imageTextureMappingList)
+                    {
+                        imageTextureMapping.ApplyTextureMapping(TakePicture.Instance.worldToCameraMatrixList, TakePicture.Instance.projectionMatrixList, TakePicture.Instance.textureArray);
+                        yield return null;
+                    }
+                }
+            }
         }
 
         void Start()
@@ -63,7 +90,7 @@ namespace HoloCameraTextureMapping
             //SpatialUnderstanding.Instance.OnScanDone += Instance_ScanStateChanged;
             //SpatialUnderstanding.Instance.RequestBeginScanning();
 
-            TakePicture.Instance.OnTextureUpdated += OnTextureUpdate;
+            TakePicture.Instance.OnTextureUpdated += OnTextureUpdated;
 
             //StartCoroutine(FinishScanning());
             //StartCoroutine(UpdateTexture());
@@ -87,7 +114,7 @@ namespace HoloCameraTextureMapping
             yield return new WaitForSeconds(15);
             //SpatialUnderstanding.Instance.RequestFinishScan();
             Debug.Log("finish!");
-            OnTextureUpdate();
+            OnTextureUpdated();
         }
 
         private IEnumerator UpdateTexture()
@@ -95,7 +122,7 @@ namespace HoloCameraTextureMapping
             yield return new WaitForSeconds(5);
             while (true)
             {
-                OnTextureUpdate();
+                OnTextureUpdated();
                 yield return new WaitForSeconds(10);
             }
         }
@@ -103,6 +130,7 @@ namespace HoloCameraTextureMapping
         public void StartTextureMapping()
         {
             SpatialUnderstanding.Instance.UnderstandingCustomMesh.MeshMaterial = TextureMappingMaterial;
+            SpatialMappingManager.Instance.gameObject.SetActive(false);
         }
 
         private void SpatialMappingSource_SurfaceAdded(object sender, DataEventArgs<SpatialMappingSource.SurfaceObject> e)

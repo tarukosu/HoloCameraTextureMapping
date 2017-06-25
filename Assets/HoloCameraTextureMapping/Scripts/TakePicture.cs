@@ -202,6 +202,7 @@ public class TakePicture : Singleton<TakePicture>
         // m_CanvasRenderer.material = new Material(Shader.Find("Unlit/ColorRoomShader"));
         //temp to store the matrix
         Matrix4x4 cameraToWorldMatrix;
+
         photoCaptureFrame.TryGetCameraToWorldMatrix(out cameraToWorldMatrix);
         Matrix4x4 worldToCameraMatrix = cameraToWorldMatrix.inverse;
 
