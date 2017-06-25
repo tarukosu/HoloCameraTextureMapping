@@ -120,7 +120,7 @@ public class TakePicture : Singleton<TakePicture>
 
         textureArray = new Texture2DArray(TEXTURE_WIDTH, TEXTURE_HEIGHT, maxPhotoNum, TextureFormat.DXT5, false);
         var clearTexture = new Texture2D(TEXTURE_WIDTH, TEXTURE_HEIGHT, TextureFormat.ARGB32, false);
-        //Color resetColor = Color.clear;
+
         var resetColorArray = clearTexture.GetPixels();
         for (int i = 0; i < resetColorArray.Length; i++)
         {
@@ -197,9 +197,6 @@ public class TakePicture : Singleton<TakePicture>
         }
 #endif
         }
-        //get this renderer
-        Renderer m_CanvasRenderer = GetComponent<Renderer>() as Renderer;
-        // m_CanvasRenderer.material = new Material(Shader.Find("Unlit/ColorRoomShader"));
         //temp to store the matrix
         Matrix4x4 cameraToWorldMatrix;
 
@@ -222,7 +219,6 @@ public class TakePicture : Singleton<TakePicture>
         m_Texture.wrapMode = TextureWrapMode.Clamp;
 
         m_Texture = ResizeTexture(m_Texture, TEXTURE_WIDTH, TEXTURE_HEIGHT);
-        //TODO 
 
         //textureList.Add(m_Texture);
         photoCaptureFrame.Dispose();
@@ -234,10 +230,6 @@ public class TakePicture : Singleton<TakePicture>
 
         m_Texture.Compress(true);
         Graphics.CopyTexture(m_Texture, 0, 0, textureArray, currentPhoto + 1, 0); 
-        //Copies the last texture
-        //
-        //worldToCameraMatrixArray[currentPhoto] = worldToCameraMatrixList[currentPhoto];
-        //projectionMatrixArray[currentPhoto] = projectionMatrixList[currentPhoto];
 
         if (OnTextureUpdated != null)
         {
@@ -251,22 +243,11 @@ public class TakePicture : Singleton<TakePicture>
 
     void OnPhotoCapturedDebug()
     {
-        /*
-        if (currentPhoto == 1)
-        {
-            return;
-        }
-        */
-
-
         if (currentPhoto == SampleTexture.Length)
         {
             return;
         }
-        //get this renderer
-        Renderer m_CanvasRenderer = GetComponent<Renderer>() as Renderer;
-        // m_CanvasRenderer.material = new Material(Shader.Find("Unlit/ColorRoomShader"));
-        //temp to store the matrix
+
         Matrix4x4 cameraToWorldMatrix = Matrix4x4.identity;
         cameraToWorldMatrix.m00 = -1f;
         cameraToWorldMatrix.m11 = -1f;
@@ -277,7 +258,6 @@ public class TakePicture : Singleton<TakePicture>
             cameraToWorldMatrix.m03 = 0.3f;
         }
 
-        //photoCaptureFrame.TryGetCameraToWorldMatrix(out cameraToWorldMatrix);
         Matrix4x4 worldToCameraMatrix = cameraToWorldMatrix.inverse;
         Matrix4x4 projectionMatrix = GetDummyProjectionMatrix();
 
@@ -285,13 +265,6 @@ public class TakePicture : Singleton<TakePicture>
         worldToCameraMatrixList.Add(worldToCameraMatrix);
 
         var texture = SampleTexture[currentPhoto % SampleTexture.Length];
-
-
-        //SampleTexture = ResizeTexture(SampleTexture, TEXTURE_WIDTH, TEXTURE_HEIGHT);
-        //texture = ResizeTexture(texture, TEXTURE_WIDTH, TEXTURE_HEIGHT);
-
-        //textureArray = new Texture2DArray(SampleTexture.width, SampleTexture.height, 1, TextureFormat.DXT5, false);
-        //Graphics.CopyTexture(SampleTexture, 0, 0, textureArray, 0, 0);
         Graphics.CopyTexture(texture, 0, 0, textureArray, currentPhoto + 1, 0);
 
         if (OnTextureUpdated != null)

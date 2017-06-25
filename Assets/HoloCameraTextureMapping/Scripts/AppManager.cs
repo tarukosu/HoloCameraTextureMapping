@@ -35,7 +35,6 @@ namespace HoloCameraTextureMapping {
                 (obj.transform.parent != null && obj.transform.parent.gameObject == SpatialMappingManager.Instance.gameObject) ||
                 (obj.transform.parent != null && obj.transform.parent.gameObject == SpatialUnderstanding.Instance.gameObject))
             {
-                //Debug.Log(obj.transform.parent.gameObject.ToString());
                 switch (State)
                 {
                     case AppStates.Scanning:
@@ -92,10 +91,6 @@ namespace HoloCameraTextureMapping {
             SimpleDialog.ButtonTypeEnum buttons = SimpleDialog.ButtonTypeEnum.OK;
             dialog = SimpleDialog.Open(DialogPrefab, buttons, "Creating Spatial Mapping", "Look around your surroundings.\nTo stop spatial mapping, do AirTap.");
             dialog.OnClosed += OnScanningDialogClosed;
-
-            //debug
-            //yield return new WaitForSeconds(5);
-            //DisplayFinishScanningDialog();
         }
 
         protected void OnScanningDialogClosed(SimpleDialogResult result)
@@ -133,7 +128,7 @@ namespace HoloCameraTextureMapping {
                     yield return null;
 
                 }
-                //                SpatialUnderstanding.Instance.UnderstandingCustomMesh.MeshMaterial = TextureMappingManager.Instance.TextureMappingMaterial;
+
                 TextureMappingManager.Instance.StartTextureMapping();
                 MiniatureRoom.GenerateMesh();
 
@@ -149,8 +144,6 @@ namespace HoloCameraTextureMapping {
             {
                 Destroy(dialog.gameObject);
             }
-
         }
-
     }
 }

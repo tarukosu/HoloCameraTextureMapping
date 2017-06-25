@@ -33,22 +33,6 @@ namespace HoloCameraTextureMapping
         protected void OnTextureUpdated()
         {
             StartCoroutine(UpdateAllMap());
-            /*
-            var imageTextureMappingList = SpatialMapping.GetComponentsInChildren<ImageTextureMapping>();
-            foreach (var imageTextureMapping in imageTextureMappingList)
-            {
-                imageTextureMapping.ApplyTextureMapping(TakePicture.Instance.worldToCameraMatrixList, TakePicture.Instance.projectionMatrixList, TakePicture.Instance.textureArray);
-            }
-
-            foreach (var obj in SampleObjects)
-            {
-                imageTextureMappingList = obj.GetComponentsInChildren<ImageTextureMapping>();
-                foreach (var imageTextureMapping in imageTextureMappingList)
-                {
-                    imageTextureMapping.ApplyTextureMapping(TakePicture.Instance.worldToCameraMatrixList, TakePicture.Instance.projectionMatrixList, TakePicture.Instance.textureArray);
-                }
-            }
-            */
         }
 
         protected IEnumerator UpdateAllMap()
@@ -59,7 +43,6 @@ namespace HoloCameraTextureMapping
                 imageTextureMapping.ApplyTextureMapping(TakePicture.Instance.worldToCameraMatrixList, TakePicture.Instance.projectionMatrixList, TakePicture.Instance.textureArray);
                 yield return null;
             }
-
 
             foreach (var obj in SampleObjects)
             {
@@ -77,54 +60,7 @@ namespace HoloCameraTextureMapping
 
         void Start()
         {
-            /*
-            var spatialMappingManager = SpatialMappingManager.Instance;
-            if (spatialMappingManager)
-            {
-                spatialMappingManager.SetSurfaceMaterial(TextureMappingMaterial);
-            }
-            */
-
-            // Use Spatial Understanding
-            //SpatialUnderstanding.Instance.ScanStateChanged += Instance_ScanStateChanged;
-            //SpatialUnderstanding.Instance.OnScanDone += Instance_ScanStateChanged;
-            //SpatialUnderstanding.Instance.RequestBeginScanning();
-
             TakePicture.Instance.OnTextureUpdated += OnTextureUpdated;
-
-            //StartCoroutine(FinishScanning());
-            //StartCoroutine(UpdateTexture());
-        }
-
-        private void Update()
-        {
-            /*
-            if (scanComplete)
-            {
-                Debug.Log("scan completed!!");
-                SpatialUnderstanding.Instance.RequestFinishScan();
-                OnTextureUpdate();
-                scanComplete = false;
-            }
-            */
-        }
-
-        private IEnumerator FinishScanning()
-        {
-            yield return new WaitForSeconds(15);
-            //SpatialUnderstanding.Instance.RequestFinishScan();
-            Debug.Log("finish!");
-            OnTextureUpdated();
-        }
-
-        private IEnumerator UpdateTexture()
-        {
-            yield return new WaitForSeconds(5);
-            while (true)
-            {
-                OnTextureUpdated();
-                yield return new WaitForSeconds(10);
-            }
         }
 
         public void StartTextureMapping()
@@ -136,14 +72,12 @@ namespace HoloCameraTextureMapping
         private void SpatialMappingSource_SurfaceAdded(object sender, DataEventArgs<SpatialMappingSource.SurfaceObject> e)
         {
             ApplyTextureMapping(e.Data.Object);
-            Debug.Log("added");
             SpatialMappingCreated();
         }
 
         private void SpatialMappingSource_SurfaceUpdated(object sender, DataEventArgs<SpatialMappingSource.SurfaceUpdate> e)
         {
             ApplyTextureMapping(e.Data.New.Object);
-            Debug.Log("updated");
         }
 
         private void ApplyTextureMapping(GameObject obj)
@@ -153,7 +87,6 @@ namespace HoloCameraTextureMapping
             {
                 imageTextureMapping = obj.AddComponent<ImageTextureMapping>();
             }
-
             imageTextureMapping.ApplyTextureMapping(TakePicture.Instance.worldToCameraMatrixList, TakePicture.Instance.projectionMatrixList, TakePicture.Instance.textureArray);
         }
     }

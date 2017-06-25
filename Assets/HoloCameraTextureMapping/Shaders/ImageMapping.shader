@@ -11,7 +11,6 @@
 		//LOD 200
         Pass
         {
-     //		Offset 50, 100
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag
@@ -133,8 +132,6 @@
                 if (!any(saturate(i.uv) - i.uv)) {
 					color = UNITY_SAMPLE_TEX2DARRAY(_TextureArray, uvz);
 				}
-				//color = UNITY_SAMPLE_TEX2DARRAY(_TextureArray, uvz);
-				//color = fixed4(0, 0, 0, 0);
 				return color;
     		}
 			ENDCG
