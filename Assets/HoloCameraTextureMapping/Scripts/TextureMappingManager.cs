@@ -11,11 +11,12 @@ namespace HoloCameraTextureMapping
     {
         public GameObject SpatialMapping;
         public Material TextureMappingMaterial;
-
         public List<GameObject> SampleObjects;
 
-        private bool scanComplete = false;
+        public MiniatureRoom MiniatureRoom;
 
+        public event Action SpatialMappingCreated = delegate { };
+        //private bool scanComplete = false;
 
         private new void Awake()
         {
@@ -29,78 +30,49 @@ namespace HoloCameraTextureMapping
 
         }
 
-        private void OnTextureUpdate()
+        protected void OnTextureUpdated()
+        {
+            StartCoroutine(UpdateAllMap());
+        }
+
+        protected IEnumerator UpdateAllMap()
         {
             var imageTextureMappingList = SpatialMapping.GetComponentsInChildren<ImageTextureMapping>();
             foreach (var imageTextureMapping in imageTextureMappingList)
             {
                 imageTextureMapping.ApplyTextureMapping(TakePicture.Instance.worldToCameraMatrixList, TakePicture.Instance.projectionMatrixList, TakePicture.Instance.textureArray);
+                yield return null;
             }
 
             foreach (var obj in SampleObjects)
             {
-                imageTextureMappingList = obj.GetComponentsInChildren<ImageTextureMapping>();
-                foreach (var imageTextureMapping in imageTextureMappingList)
+                if (obj.activeInHierarchy)
                 {
-                    imageTextureMapping.ApplyTextureMapping(TakePicture.Instance.worldToCameraMatrixList, TakePicture.Instance.projectionMatrixList, TakePicture.Instance.textureArray);
+                    imageTextureMappingList = obj.GetComponentsInChildren<ImageTextureMapping>();
+                    foreach (var imageTextureMapping in imageTextureMappingList)
+                    {
+                        imageTextureMapping.ApplyTextureMapping(TakePicture.Instance.worldToCameraMatrixList, TakePicture.Instance.projectionMatrixList, TakePicture.Instance.textureArray);
+                        yield return null;
+                    }
                 }
             }
-
         }
 
         void Start()
         {
-            var spatialMappingManager = SpatialMappingManager.Instance;
-            if (spatialMappingManager)
-            {
-                spatialMappingManager.SetSurfaceMaterial(TextureMappingMaterial);
-            }
-
-            // Use Spatial Understanding
-            //SpatialUnderstanding.Instance.ScanStateChanged += Instance_ScanStateChanged;
-            //SpatialUnderstanding.Instance.OnScanDone += Instance_ScanStateChanged;
-            //SpatialUnderstanding.Instance.RequestBeginScanning();
-
-            TakePicture.Instance.OnTextureUpdated += OnTextureUpdate;
-
-            StartCoroutine(FinishScanning());
-            StartCoroutine(UpdateTexture());
+            TakePicture.Instance.OnTextureUpdated += OnTextureUpdated;
         }
 
-        private void Update()
+        public void StartTextureMapping()
         {
-            /*
-            if (scanComplete)
-            {
-                Debug.Log("scan completed!!");
-                SpatialUnderstanding.Instance.RequestFinishScan();
-                OnTextureUpdate();
-                scanComplete = false;
-            }
-            */
-        }
-
-        private IEnumerator FinishScanning()
-        {
-            yield return new WaitForSeconds(15);
-            //SpatialUnderstanding.Instance.RequestFinishScan();
-            Debug.Log("finish!");
-            OnTextureUpdate();
-        }
-
-        private IEnumerator UpdateTexture()
-        {
-            yield return new WaitForSeconds(5);
-            while (true)
-            {
-                OnTextureUpdate();
-                yield return new WaitForSeconds(10);
-            }
+            SpatialUnderstanding.Instance.UnderstandingCustomMesh.MeshMaterial = TextureMappingMaterial;
+            SpatialMappingManager.Instance.gameObject.SetActive(false);
         }
 
         private void SpatialMappingSource_SurfaceAdded(object sender, DataEventArgs<SpatialMappingSource.SurfaceObject> e)
         {
             ApplyTextureMapping(e.Data.Object);
+            SpatialMappingCreated();
         }
 
         private void SpatialMappingSource_SurfaceUpdated(object sender, DataEventArgs<SpatialMappingSource.SurfaceUpdate> e)
@@ -115,7 +87,6 @@ namespace HoloCameraTextureMapping
             {
                 imageTextureMapping = obj.AddComponent<ImageTextureMapping>();
             }
-
             imageTextureMapping.ApplyTextureMapping(TakePicture.Instance.worldToCameraMatrixList, TakePicture.Instance.projectionMatrixList, TakePicture.Instance.textureArray);
         }
     }
