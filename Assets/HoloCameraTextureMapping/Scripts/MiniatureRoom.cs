@@ -14,7 +14,7 @@ namespace HoloCameraTextureMapping {
         }
 
         void Update() {
-
+            
         }
 
         protected void OnTextureUpdated()

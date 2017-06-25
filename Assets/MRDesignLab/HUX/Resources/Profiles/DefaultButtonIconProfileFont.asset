@@ -19,4 +19,4 @@ MonoBehaviour:
   OSFontName: Segoe MDL2 Assets
   RendererScale: 0.00675
   FontScaleFactor: 16
-  iconFont: {fileID: 12800000, guid: 1c23dd197fee40242837e153e2466621, type: 3}
+  iconFont: {fileID: 12800000, guid: 1c4f24fd386170e4690b85905b378ac1, type: 3}
